@@ -30,7 +30,31 @@ const onDelete=async (id)=>{
   getList()
 }
 // TODO: 编辑功能
-
+//思路：用户填写新数据->
+const inputs=reactive({
+  showModal:false,
+  input1:'',
+  input2:'',
+  id:''
+})
+// const id=list.id
+// const name=list.name
+// const origin=list.origin
+const Adddata=async (id,name,origin)=>{
+  inputs.showModal=false
+  await axios.put(`http://localhost:8080/list/${id}`,{
+    name:inputs.input1,
+    origin:inputs.input2,
+    
+  })
+  getList()
+  inputs.input1=''
+  inputs.input2=''
+}
+const add=(id)=>{
+  inputs.showModal=true
+  inputs.id=id
+}
 </script>
 
 <template>
@@ -38,15 +62,27 @@ const onDelete=async (id)=>{
     <el-table :data='list'>
       <el-table-column label="ID" prop="id"></el-table-column>
       <el-table-column label="姓名" prop="name" width="150"></el-table-column>
-      <el-table-column label="籍贯" prop="place_of_origin"></el-table-column>
+      <el-table-column label="籍贯" prop="origin"></el-table-column>
       <el-table-column label="操作" width="150">
         <template #default="{row}">
-          <el-button type="primary" link>编辑</el-button>
+          <el-button type="primary" @click="add(row.id)" link>编辑</el-button>
           <el-button type="danger" @click="onDelete(row.id)" link>删除</el-button>
         </template>
       </el-table-column>
     </el-table>
   </div>
+
+  <div class="box" v-show="inputs.showModal">
+    <div style=" padding: 10%;">
+      <input type="text" v-model="inputs.input1" placeholder="姓名">
+    <br>
+    <input type="text" v-model="inputs.input2" placeholder="籍贯">
+    <br>
+    <br>
+   <div style="width: 100%; height: auto; display: flex; justify-content: space-evenly;"> <input type="button" value="取消" @click="inputs.showModal=false"><input type="button" @click="Adddata(inputs.id,inputs.input1,inputs.input2)" value="提交"></div>
+    </div>
+  </div>
+
   <Edit />
 </template>
 
@@ -54,5 +90,13 @@ const onDelete=async (id)=>{
 .app {
   width: 980px;
   margin: 100px auto 0;
+}
+.box{
+  width: 300px;
+  height: 150px;
+  border: 1px solid black;
+  text-align: center;
+  position: fixed;
+  left: 40%;
 }
 </style>
